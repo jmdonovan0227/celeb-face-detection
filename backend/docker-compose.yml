@@ -1,0 +1,56 @@
+services:
+  # create a service called smart-brain-api using Dockerfile we have already created
+  # this represents a container for an image meaning each service is its own container with its
+  # own image
+  # backend api
+  cfd-api:
+    container_name: backend
+    # We don't need this since we will build from the Dockerfile we created.
+    # image: node:20.18.1
+    # lets us build from our own Dockerfile instead of a default image
+    # looks for a Dockerfile in the current directory
+    build: ./
+    # ran npm start to run our container
+    command: npm start
+    # this is the directory that we want to work out of, docker is going to look for our dependencies
+    # in package.json in the directory we specify here.
+    working_dir: /usr/src/celeb-face-detection/backend
+    env_file:
+      - .env
+    # exposes container port 3000 to localhost 3000 so we can access it
+    ports:
+      - ${SERVER_PORT}:${SERVER_PORT}
+    # environment: to pass down environment variables
+    # links: what we want this service to link such as postgreSQL
+    # volumes allows us access to file system in docker container, this line
+    # is mapping our current local files to our working dir in our container and the container filesystem is going
+    # to see the file changes and update nodemon (restart and update with changes)
+    # great for mounting what we have locally to our container (so whenever we update locally we can reflect that in the running container)
+  
+  # PostgreSQL service
+  postgres:
+    container_name: 'postgres'
+    #   # we can't reference localhost in the container so instead we provide the name of the service
+    #   # the postgres service is linked in the links: section below.
+    # container name is already set with image
+    # image: postgres
+    # USE BUILD WHENEVER YOU HAVE A DOCKERFILE
+    env_file:
+      - .env
+    build: ./postgres
+    ports:
+      - ${POSTGRES_PORT}:${POSTGRES_PORT}
+    volumes:
+      - db-data:/var/lib/postgresql/data
+  
+  # Redis Service
+  redis:
+    image: redis
+    volumes:
+      - db-data:/var/lib/redis/data
+    ports:
+      - ${REDIS_PORT}:${REDIS_PORT}
+
+volumes:
+  db-data:
+    

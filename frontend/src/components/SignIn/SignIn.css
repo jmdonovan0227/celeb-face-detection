@@ -1,0 +1,25 @@
+.signin-legend {
+    font-family: Georgia, 'Times New Roman', Times, serif;
+    font-size: 6rem;
+}
+
+/** Tablets START */
+@media only screen and (min-width: 897px) and (max-width: 1063px) {
+    .signin-legend {
+        font-size: 5rem;
+    }
+}
+
+@media only screen and (min-width: 766px) and (max-width: 896px) {
+    .signin-legend {
+        font-size: 4.5rem;
+    }
+}
+
+@media only screen and (min-width: 344px) and (max-width: 765px) {
+    .signin-legend {
+        font-size: 4.25rem;
+    }
+}
+
+/** Tablets END */

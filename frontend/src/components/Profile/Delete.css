@@ -1,0 +1,11 @@
+.adjust-modal-title {
+    padding-left: 25px;
+}
+
+.modal-background {
+    background: rgba(255, 255, 255, 0.9);
+}
+
+.modal-text-styling {
+    font-family:'Courier New', Courier, monospace;
+}

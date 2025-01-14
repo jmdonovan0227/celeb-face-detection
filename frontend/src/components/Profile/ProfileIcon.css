@@ -1,0 +1,15 @@
+.avatar {
+    vertical-align: middle;
+    width: 4.6875rem;
+    height: 4.6875rem;
+    border-radius: 50%;
+    border: 2px solid black;
+    cursor: pointer;
+}
+
+@media only screen and (min-height: 600px) and (max-height: 800px) {
+    .avatar {
+        width: 3.5rem;
+        height: 3.5rem;
+    }
+}
