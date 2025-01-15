@@ -33,16 +33,27 @@ app.use(helmet());
 app.use(morgan('combined'));
 app.use(cors());
 
-const db = knex({
-        client: 'pg',
-        connection: {
-                host: process.env.POSTGRES_HOST,
-                port: process.env.POSTGRES_PORT,
-                user: process.env.APP_USER,
-                password: process.env.APP_PASSWORD,
-                database: process.env.POSTGRES_DB
-        }
-});
+let db = null;
+
+if (process.env.NODE_ENV === 'testing' || process.env.NODE_ENV === 'development') {
+        db = knex({
+                client: 'pg',
+                connection: {
+                        host: process.env.POSTGRES_HOST,
+                        port: process.env.POSTGRES_PORT,
+                        user: process.env.APP_USER,
+                        password: process.env.APP_PASSWORD,
+                        database: process.env.POSTGRES_DB
+                }
+        });
+}
+
+else if(process.env.NODE_ENV === 'production') {
+        db = knex({
+                client: 'pg',
+                connection: process.env.PG_USER_URI
+        });
+}
 
 const PORT = process.env.PORT;
 
