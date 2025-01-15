@@ -133,8 +133,9 @@ export const handleRegister = async(req, res, db, bcrypt, decrypt, nodemailer, g
 
         if(isValidEmail) {
             const saltRounds = 10;
+            console.log('before b');
             const hash = bcrypt.hashSync(password, saltRounds);
-        
+            console.log('after b');
             db.transaction(trx => {
                 trx.insert({
                     hash: hash,
@@ -152,10 +153,13 @@ export const handleRegister = async(req, res, db, bcrypt, decrypt, nodemailer, g
                         joined: new Date()
                     })
                     .then(async(user) => {
+                        console.log('before session creation')
                         const session = await createSessions(user[0]);
+                        console.log('after session creation');
                         const { name, entries, joined, age } = user[0];
 
                         if(process.env.NODE_ENV !== 'development' && process.env.NODE_ENV !== 'testing') {
+                            console.log('before sending welcome email');
                             // next try sending a welcome message with the welcome.html
                             fs.readFile('./welcome/welcome.html', 'utf8', async(err, data) => {
                                 if(err) {
