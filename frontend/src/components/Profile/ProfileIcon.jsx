@@ -11,8 +11,10 @@ import './ProfileIcon.css';
 class ProfileIcon extends Component {
     constructor(props) {
         super(props);
+
         this.state = {
-            dropdownOpen: false
+            dropdownOpen: false,
+            isProfilePictureLoading: true
         }
     }
 
@@ -20,6 +22,10 @@ class ProfileIcon extends Component {
         this.setState(prevState => ({
             dropdownOpen: !prevState.dropdownOpen
         }));
+    }
+
+    toggleImage = () => {
+        this.setState({ isProfilePictureLoading: false });
     }
 
     render() {
@@ -31,7 +37,7 @@ class ProfileIcon extends Component {
                         tag="span"
                         role='dropdown-toggle'
                     >
-                        <img src={!this.props.profile_picture ? '/icons8-user-60.png' : this.props.profile_picture } className='avatar' alt='your profile icon main' />
+                        <img onLoad={this.toggleImage} style={this.state.isProfilePictureLoading ? { visibility: 'hidden' } : { visibility: 'visible'} } src={!this.props.profile_picture ? '/icons8-user-60.png' : this.props.profile_picture } className='avatar' alt='your profile icon main' />
                     </DropdownToggle>
                     <DropdownMenu style={{marginTop: '1.85rem', backgroundColor: 'rgb(255, 255, 255)'}}>
                         <DropdownItem onClick={this.props.toggleModal}>View Profile</DropdownItem>

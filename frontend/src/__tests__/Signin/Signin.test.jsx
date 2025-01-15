@@ -51,14 +51,13 @@ afterAll(() => server.close());
 const mockLoadUser = jest.fn();
 // check that a route change is passed correctly
 const mockRouteChange = jest.fn();
-const mockIsCheckingSession = jest.fn();
 
 describe('<SignIn /> Component', () => {
     test('Ensure all elements render for SignIn component', () => {
         // arrange
         render(
             <MemoryRouter initialEntries={['/']}>
-                <SignIn loadUser={mockLoadUser} onRouteChange={mockRouteChange} setIsCheckingSession={mockIsCheckingSession} />
+                <SignIn loadUser={mockLoadUser} onRouteChange={mockRouteChange} />
             </MemoryRouter>
         );
 
@@ -82,7 +81,7 @@ describe('<SignIn /> Component', () => {
         // arrange
         render(
             <MemoryRouter>
-                <SignIn loadUser={mockLoadUser} onRouteChange={mockRouteChange} setIsCheckingSession={mockIsCheckingSession} />
+                <SignIn loadUser={mockLoadUser} onRouteChange={mockRouteChange} />
             </MemoryRouter>
         );
 
@@ -146,7 +145,7 @@ describe('<SignIn /> Component', () => {
         // arrange
         render(
             <MemoryRouter>
-                <SignIn loadUser={mockLoadUser} onRouteChange={mockRouteChange} setIsCheckingSession={mockIsCheckingSession} />
+                <SignIn loadUser={mockLoadUser} onRouteChange={mockRouteChange} />
             </MemoryRouter>
         );
 
@@ -212,7 +211,7 @@ describe('<SignIn /> Component', () => {
         // arrange
         render(
             <MemoryRouter>
-                <SignIn loadUser={mockLoadUser} onRouteChange={mockRouteChange} setIsCheckingSession={mockIsCheckingSession} />
+                <SignIn loadUser={mockLoadUser} onRouteChange={mockRouteChange} />
             </MemoryRouter>
         );
 
@@ -242,7 +241,7 @@ describe('<SignIn /> Component', () => {
         render (
             <MemoryRouter initialEntries={['/']}>
                 <Routes>
-                    <Route path='/' element={<SignIn loadUser={mockLoadUser} onRouteChange={mockRouteChange} setIsCheckingSession={mockIsCheckingSession} /> } />
+                    <Route path='/' element={<SignIn loadUser={mockLoadUser} onRouteChange={mockRouteChange} /> } />
                     <Route path='/forgot_password' element={<ForgotPassword />} />
                 </Routes>
             </MemoryRouter>

@@ -67,14 +67,12 @@ class SignIn extends Component {
                         if(getProfilePicResponse.ok) {
                             const data = await getProfilePicResponse.json();
                             this.props.loadUser(Object.assign(user, {profile_picture : data.imageUrl }));
-                            this.props.setIsCheckingSession(false);
                             this.props.onRouteChange('home');
                         }
                     }
 
                     else if(user && user.name) {
                         this.props.loadUser(user);
-                        this.props.setIsCheckingSession(false);
                         this.props.onRouteChange('home');
                     }
                   })

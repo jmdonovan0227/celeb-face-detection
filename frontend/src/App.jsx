@@ -1,4 +1,4 @@
-import React, { Component, createRef } from 'react';
+import React, { Component, createRef, Suspense } from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import Navigation from './components/Navigation/Navigation';
 import SignInForm from './components/SignIn/SignIn';
@@ -7,6 +7,7 @@ import ForgotPassword from './components/ForgotPassword/ForgotPassword';
 import ResetPassword from './components/ResetPassword/ResetPassword';
 import ErrorPage from './components/ErrorPage/ErrorPage';
 import Home from './components/Home/Home';
+import LoadingSpinner from './components/LoadingSpinner/LoadingSpinner';
 import ParticlesBg from 'particles-bg';
 import ProfileModal from './components/Modal/ProfileModal';
 import DeleteModal from './components/Modal/DeleteModal';
@@ -14,9 +15,6 @@ import Profile from './components/Profile/Profile';
 import Delete from './components/Profile/Delete';
 import { APP_URL } from './config.js';
 import './App.css';
-
-console.log('App URL: ',  APP_URL);
-
 
 const initialState = {
   input: '',
@@ -87,10 +85,16 @@ class App extends Component {
               this.setIsCheckingSession(false);
               this.onRouteChange('home');
             }
-          }).catch(error => { return; })
+          }).catch(error => { this.setIsCheckingSession(false); })
         }
       })
-      .catch(error => { return; });
+      .catch(error => {
+        this.setIsCheckingSession(false);
+      });
+    }
+
+    else {
+      this.setIsCheckingSession(false);
     }
   }
 
@@ -291,7 +295,7 @@ class App extends Component {
   onRouteChange = (route) => {
     if(route === 'signout') {
       window.sessionStorage.removeItem('token');
-      this.setState(initialState);
+      this.setState(Object.assign(initialState, { isCheckingSession: false }));
     }
     else if(route === 'home') {
       this.setState({isSignedIn: true});
@@ -328,27 +332,27 @@ class App extends Component {
 
     return (
       <div className='app'>
-            <BrowserRouter>
-              <ParticlesBg type="cobweb" bg={true} />
-              <Routes>
-                <Route path="/" element={<Navigation toggleDeleteModal={this.toggleDeleteModal} isSignedIn={isSignedIn} onRouteChange={this.onRouteChange} toggleModal={this.toggleModal} profile_picture={this.state.user?.profile_picture} />}>
-                  <Route index element={(route === 'signin' || route === 'signout') ? <SignInForm loadUser={this.loadUser} onRouteChange={this.onRouteChange} setIsCheckingSession={this.setIsCheckingSession} /> : (
-                    route === 'home' ? (
-                      <div className='home-container'>
-                        { isProfileOpen &&
-                            <ProfileModal>
-                              <Profile isProfileOpen={isProfileOpen} toggleModal={this.toggleModal} user={user} loadUser={this.loadUser} profile_picture={this.state.user.profile_picture} setProfilePicture={this.setProfilePicture} />
-                            </ProfileModal>
-                        }
+        { this.state.isCheckingSession ? <LoadingSpinner /> : (
+              <BrowserRouter>
+                <ParticlesBg type="cobweb" bg={true} />
+                <Routes>
+                  <Route path="/" element={<Suspense fallback={<div>Loading Nav...</div>}><Navigation toggleDeleteModal={this.toggleDeleteModal} isSignedIn={isSignedIn} onRouteChange={this.onRouteChange} toggleModal={this.toggleModal} profile_picture={this.state.user?.profile_picture} /></Suspense>}>
+                    <Route index element={(route === 'signin' || route === 'signout') ? <SignInForm loadUser={this.loadUser} onRouteChange={this.onRouteChange} /> : (
+                      route === 'home' ? (
+                        <div className='home-container'>
+                          { isProfileOpen &&
+                              <ProfileModal>
+                                <Profile isProfileOpen={isProfileOpen} toggleModal={this.toggleModal} user={user} loadUser={this.loadUser} profile_picture={this.state.user.profile_picture} setProfilePicture={this.setProfilePicture} />
+                              </ProfileModal>
+                          }
 
-                        {
-                          isDeleteModalOpen &&
-                            <DeleteModal>
-                              <Delete isDeleteModalOpen={isDeleteModalOpen} toggleDeleteModal={this.toggleDeleteModal} onRouteChange={this.onRouteChange} />
-                            </DeleteModal>
-                        }
+                          {
+                            isDeleteModalOpen &&
+                              <DeleteModal>
+                                <Delete isDeleteModalOpen={isDeleteModalOpen} toggleDeleteModal={this.toggleDeleteModal} onRouteChange={this.onRouteChange} />
+                              </DeleteModal>
+                          }
 
-                        { !this.state.isCheckingSession &&
                           <Home 
                             name={user.name} 
                             entries={user.entries}
@@ -364,19 +368,20 @@ class App extends Component {
                             onImageFormClose={this.onImageFormClose}
                             parentRef={this.state.parentRef}
                           />
-                        }
-                      </div> 
-                      ) : (
-                      route === 'register' ? <Register setIsCheckingSession={this.setIsCheckingSession} loadUser={this.loadUser} onRouteChange={this.onRouteChange} /> : null
-                    )
-                  )}/>
+                        </div> 
+                        ) : (
+                        route === 'register' ? <Register setIsCheckingSession={this.setIsCheckingSession} loadUser={this.loadUser} onRouteChange={this.onRouteChange} /> : null
+                      )
+                    )}/>
 
-                  <Route path="forgot_password" element={<ForgotPassword isSignedIn={isSignedIn} />}/>
-                  <Route path="reset_password" element={<ResetPassword isSignedIn={isSignedIn} />}/>
-                  <Route path="*" element={<ErrorPage/>} />
-                </Route>
-              </Routes>
-            </BrowserRouter>
+                    <Route path="forgot_password" element={<ForgotPassword isSignedIn={isSignedIn} />}/>
+                    <Route path="reset_password" element={<ResetPassword isSignedIn={isSignedIn} />}/>
+                    <Route path="*" element={<ErrorPage/>} />
+                  </Route>
+                </Routes>
+              </BrowserRouter>
+            )
+          }
       </div>
     );
   }
