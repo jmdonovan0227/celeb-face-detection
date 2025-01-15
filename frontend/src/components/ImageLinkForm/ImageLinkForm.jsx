@@ -24,7 +24,7 @@ const ImageLinkForm = ({ onInputChange, onButtonSubmit, readyToDetectImages, inp
                             disabled={input}
                             accept='image/*'
                         />
-                        <button className='detect-button-style' onClick={onButtonSubmit}>Detect</button>
+                        <button className='detect-button-style' disabled={!readyToDetectImages} onClick={onButtonSubmit}>Detect</button>
                     </div>
             </div>
         </div>

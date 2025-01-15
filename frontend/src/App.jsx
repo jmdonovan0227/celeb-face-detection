@@ -218,6 +218,7 @@ class App extends Component {
         this.setState({readyToDetectImages: false});
       }
 
+      this.setState({ fileLink: '' });
       this.setState({ input: value });
       this.setState({localFile: null});
     }
@@ -246,7 +247,7 @@ class App extends Component {
     else {
       data.append('image', this.state.input);
     }
-
+    
     fetch(`${APP_URL}/api/faceurl`, {
         method: 'post',
         headers: {'Authorization': window.sessionStorage.getItem('token') },
