@@ -2,7 +2,6 @@ import { promises as dnsPromises }  from 'dns';
 import redisClient from './signin.js';
 import jwt from 'jsonwebtoken';
 import fs from 'fs';
-import { oauth2 } from 'googleapis/build/src/apis/oauth2/index.js';
 
 async function checkEmailDomain(email) {
     // get domain name from email
@@ -98,28 +97,34 @@ export const handleRegister = async(req, res, db, bcrypt, decrypt, nodemailer, g
     const whiteSpaceCount = name.split(' ').length - 1;
 
     if(!email || !name || !password) {
+        console.log('1')
         return res.status(400).json('Invalid Registration');
     }
 
     // check if name is valid
     else if(name.length === 1) {
+        console.log('2')
         return res.status(400).json('Invalid Registration');
     }
 
     else if(numbersRegex.test(name) || specialCharsRegex.test(name)) {
+        console.log('3')
         return res.status(400).json('Invalid Registration');
     }
 
     else if(whiteSpaceCount > 1) {
+        console.log('4')
         return res.status(400).json('Invalid Registration');
     }
 
     else if (!emailRegex.test(email)) {
+        console.log('5')
         return res.status(400).json('Invalid Registration');
     }
 
     // check password
     else if(password.length < minLength || !upperCaseRegex.test(password) || !lowerCaseRegex.test(password) || !numbersRegex.test(password) || !specialCharsRegex.test(password) || whiteSpaceRegex.test(password)) {
+        console.log('6')
         return res.status(400).json('Invalid Registration');
     }
 
@@ -154,6 +159,7 @@ export const handleRegister = async(req, res, db, bcrypt, decrypt, nodemailer, g
                             // next try sending a welcome message with the welcome.html
                             fs.readFile('./welcome/welcome.html', 'utf8', async(err, data) => {
                                 if(err) {
+                                    console.log('8')
                                     return res.status(400).json('Invalid Registration');
                                 }
 
@@ -178,15 +184,20 @@ export const handleRegister = async(req, res, db, bcrypt, decrypt, nodemailer, g
                         } 
                         
                         else {
+                            console.log('9')
                             res.json({ user: { name: name, entries: entries, joined: joined, age: age }, session });
                         }
                     })
                 }).then(trx.commit)
                 .catch(trx.rollback);
-            }).catch(error => res.status(400).json('Invalid Registration'));
+            }).catch(error => {
+                console.log('10')
+                return res.status(400).json('Invalid Registration')
+            });
         }
 
         else {
+            console.log('7')
             res.status(400).json('Invalid Registration');
         }
     }
