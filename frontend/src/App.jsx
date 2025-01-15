@@ -15,6 +15,8 @@ import Delete from './components/Profile/Delete';
 import { APP_URL } from './config.js';
 import './App.css';
 
+console.log('App URL: ',  APP_URL);
+
 
 const initialState = {
   input: '',
