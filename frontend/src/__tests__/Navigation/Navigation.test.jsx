@@ -27,9 +27,11 @@ describe('<Navigation />', () => {
 
 
         // assert (expect profile image to be shown when logged in)
-        expect(screen.getByRole('img')).toBeInTheDocument();
-        expect(await screen.findByRole('img')).toHaveAttribute('src', 'some url');
-        expect(screen.queryByRole('link', { name: /signin_link/i })).toBeNull();
+        waitFor(() => {
+            expect(screen.getByRole('img')).toBeInTheDocument();
+            expect(screen.getByRole('img')).toHaveAttribute('src', 'some url');
+            expect(screen.queryByRole('link', { name: /signin_link/i })).toBeNull();
+        });
     });
 
     test('check for rendering sign in and register links when not signed in and check that signin route is called correctly on click', async() => {

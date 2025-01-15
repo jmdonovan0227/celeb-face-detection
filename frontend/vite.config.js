@@ -2,15 +2,13 @@ import { defineConfig, loadEnv } from 'vite';
 import react from '@vitejs/plugin-react';
 import { VitePWA } from 'vite-plugin-pwa';
 export default defineConfig(({ mode }) => {
-  console.log('mode: ', mode);
   const env = loadEnv(mode, process.cwd());
-  console.log('env: ', env);
-  // console.log(import.meta.env.VITE_APP_URL);
-  console.log(env.VITE_APP_URL);
-  console.log(process.env.VITE_APP_URL);
 
   return {
     base: "./",
+    define: {
+      __APP_URL__: JSON.stringify(env.VITE_APP_URL)
+    },
     plugins: [
       react(),
       VitePWA({
@@ -42,7 +40,7 @@ export default defineConfig(({ mode }) => {
           runtimeCaching: [
             {
               urlPattern: ({url}) => {
-                return url.origin === `${env.VITE_APP_URL}` && url.pathname === '/api/profile/'
+                return url.origin === __APP_URL__ && url.pathname === '/api/profile/'
               },
               handler: 'CacheFirst',
               options: {
@@ -55,7 +53,7 @@ export default defineConfig(({ mode }) => {
 
             {
               urlPattern: ({url}) => {
-                return url.origin === `${env.VITE_APP_URL}` && url.pathname === '/api/upload/signedurl'
+                return url.origin === __APP_URL__ && url.pathname === '/api/upload/signedurl'
               },
               handler: 'CacheFirst',
               options: {
