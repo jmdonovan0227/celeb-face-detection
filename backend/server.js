@@ -65,10 +65,14 @@ if (process.env.NODE_ENV === 'testing' || process.env.NODE_ENV === 'development'
 }
 
 else if(process.env.NODE_ENV === 'production') {
+        console.log('here');
         db = knex({
                 client: 'pg',
                 connection: process.env.PG_USER_URI
         });
+
+        console.log(process.env.PG_USER_URI);
+        console.log('db: ', db);
 }
 
 const PORT = process.env.PORT;
