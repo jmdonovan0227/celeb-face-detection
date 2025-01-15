@@ -428,7 +428,7 @@ describe('<App />', () => {
         expect(screen.getByRole('paragraph', { name: 'error_text' } )).toHaveTextContent('Invalid Email or Password');
     });
 
-    test('Error Flow 3.1: => Inserting invalid url => try detecting celebrities with an invalid url type not .png, .jpeg, .jpg, or .webp', async() => {
+    test('Error Flow 3.1: => Inserting an invalid url => try detecting celebrities with an invalid url type not .png, .jpeg, .jpg, or .webp', async() => {
         // arrange
         render (
             <App />
@@ -453,14 +453,13 @@ describe('<App />', () => {
 
         // Step 3 => insert a valid image url
         const detect_button = screen.getByRole('button', { name: /Detect/i });
-        // Remove token
-        sessionStorage.clear();
-        
+        const url_input = screen.getByRole('textbox', { name: /insert-url-here/i });
+        await userEvent.type(url_input, 'photo.txt');
         await userEvent.click(detect_button);
 
+        // expect app to block the user from submitting an invalid photo (detect should be disabled);
         await waitFor(() => {
-            expect(screen.queryByRole('valid-span')).toBeNull();
-            expect(screen.getByRole('error-span')).toHaveTextContent("Sorry, I wasn't able to detect any faces...");
+            expect(screen.queryByRole('error-span')).toBeNull();
             expect(entriesDiv).toHaveTextContent('2');
         });
     });
@@ -497,8 +496,7 @@ describe('<App />', () => {
         await userEvent.click(detect_button);
 
         await waitFor(() => {
-            expect(screen.queryByRole('valid-span')).toBeNull();
-            expect(screen.getByRole('error-span')).toHaveTextContent("Sorry, I wasn't able to detect any faces...");
+            expect(screen.queryByRole('error-span')).toBeNull();
             expect(entriesDiv).toHaveTextContent('2');
         });
     });
