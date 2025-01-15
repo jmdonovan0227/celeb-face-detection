@@ -9,9 +9,10 @@ services:
     # image: node:20.18.1
     # lets us build from our own Dockerfile instead of a default image
     # looks for a Dockerfile in the current directory
+    depends_on:
+      postgres:
+        condition: service_healthy
     build: ./
-    # ran npm start to run our container
-    command: npm start
     # this is the directory that we want to work out of, docker is going to look for our dependencies
     # in package.json in the directory we specify here.
     working_dir: /usr/src/celeb-face-detection/backend
@@ -30,16 +31,22 @@ services:
   # PostgreSQL service
   postgres:
     container_name: 'postgres'
+    env_file:
+      - .env
     #   # we can't reference localhost in the container so instead we provide the name of the service
     #   # the postgres service is linked in the links: section below.
     # container name is already set with image
-    # image: postgres
+    image: postgres
     # USE BUILD WHENEVER YOU HAVE A DOCKERFILE
-    env_file:
-      - .env
-    build: ./postgres
+    # build: ./postgres
     ports:
       - ${POSTGRES_PORT}:${POSTGRES_PORT}
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
     volumes:
       - db-data:/var/lib/postgresql/data
   
