@@ -73,7 +73,7 @@ class App extends Component {
                 const data = await getProfilePicResponse.json();
                 const { image_key, ...userObject } = user;
                 this.loadUser(Object.assign(userObject, {profile_picture : data.imageUrl }));
-                setTimeout(() => this.setIsCheckingSession(false), 4000);
+                this.setIsCheckingSession(false);
                 this.onRouteChange('home');
               }
             }
@@ -81,7 +81,7 @@ class App extends Component {
             else if(user && user.name) {
               const { image_key, ...userObject } = user;
               this.loadUser(userObject);
-              setTimeout(() => this.setIsCheckingSession(false), 4000);
+              this.setIsCheckingSession(false);
               this.onRouteChange('home');
             }
           }).catch(error => { this.setIsCheckingSession(false); })
