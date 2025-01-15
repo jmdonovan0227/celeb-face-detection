@@ -4,7 +4,7 @@
   "main": "index.js",
   "scripts": {
     "start": "nodemon server.js",
-    "migrate": "knex migrate:latest --debug"
+    "migrate": "knex migrate:latest"
   },
   "keywords": [],
   "type": "module",

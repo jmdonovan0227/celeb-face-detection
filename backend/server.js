@@ -31,7 +31,21 @@ const app = express();
 app.use(bodyParser.json());
 app.use(helmet());
 app.use(morgan('combined'));
-app.use(cors());
+
+const whiteList = [process.env.ALLOWED_ORIGIN_1, process.env.ALLOWED_ORIGIN_2];
+const corsOptions = {
+        origin: function (origin, callback) {
+                if(whiteList.indexOf(origin) !== -1) {
+                        callback(null, true);
+                }
+
+                else {
+                        callback(new Error('Not allowed by CORS'));
+                }
+        }
+}
+
+app.use(cors(corsOptions));
 
 let db = null;
 
