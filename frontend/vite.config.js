@@ -6,9 +6,6 @@ export default defineConfig(({ mode }) => {
 
   return {
     base: "./",
-    define: {
-      __APP_URL__: JSON.stringify(env.VITE_APP_URL)
-    },
     plugins: [
       react(),
       VitePWA({
@@ -34,36 +31,6 @@ export default defineConfig(({ mode }) => {
               purpose: 'any'
             }
           ]
-        },
-
-        workbox: {
-          runtimeCaching: [
-            {
-              urlPattern: ({url}) => {
-                return url.origin === __APP_URL__ && url.pathname === '/api/profile/'
-              },
-              handler: 'CacheFirst',
-              options: {
-                cacheName: 'user-pro-info-cache',
-                cacheableResponse: {
-                  statuses: [0, 200]
-                }
-              }
-            },
-
-            {
-              urlPattern: ({url}) => {
-                return url.origin === __APP_URL__ && url.pathname === '/api/upload/signedurl'
-              },
-              handler: 'CacheFirst',
-              options: {
-                cacheName: 'user-pro-pic-cache',
-                cacheableResponse: {
-                  statuses: [0, 200]
-                }
-              }
-            },
-          ],
         }
       })
     ]
