@@ -36,7 +36,6 @@ const initialState = {
     profile_picture: ''
   },
 
-  // profile_picture: '',
   readyToDetectImages: false,
   isCheckingSession: true,
   parentRef: createRef()

@@ -32,11 +32,8 @@ app.use(bodyParser.json());
 app.use(helmet());
 app.use(morgan('combined'));
 
-console.log('Allowed Origin: ', process.env.ALLOWED_ORIGIN);
-
 const corsOptions = {
         origin: function (origin, callback) {
-                console.log('origin: ', origin);
                 if(origin === process.env.ALLOWED_ORIGIN) {
                         callback(null, true);
                 }
@@ -65,14 +62,10 @@ if (process.env.NODE_ENV === 'testing' || process.env.NODE_ENV === 'development'
 }
 
 else if(process.env.NODE_ENV === 'production') {
-        console.log('here');
         db = knex({
                 client: 'pg',
-                connection: process.env.PG_ADMIN_URI
+                connection: process.env.PG_USER_URI
         });
-
-        // console.log(process.env.PG_USER_URI);
-        // console.log('db: ', db);
 }
 
 const PORT = process.env.PORT;
