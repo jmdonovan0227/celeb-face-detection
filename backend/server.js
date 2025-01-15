@@ -32,10 +32,9 @@ app.use(bodyParser.json());
 app.use(helmet());
 app.use(morgan('combined'));
 
-const whiteList = [process.env.ALLOWED_ORIGIN_1, process.env.ALLOWED_ORIGIN_2];
 const corsOptions = {
         origin: function (origin, callback) {
-                if(whiteList.indexOf(origin) !== -1) {
+                if(origin === process.env.ALLOWED_ORIGIN) {
                         callback(null, true);
                 }
 
