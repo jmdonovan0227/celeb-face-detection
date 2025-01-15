@@ -32,8 +32,11 @@ app.use(bodyParser.json());
 app.use(helmet());
 app.use(morgan('combined'));
 
+console.log('Allowed Origin: ', process.env.ALLOWED_ORIGIN);
+
 const corsOptions = {
         origin: function (origin, callback) {
+                console.log('origin: ', origin);
                 if(origin === process.env.ALLOWED_ORIGIN) {
                         callback(null, true);
                 }
