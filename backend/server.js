@@ -68,11 +68,11 @@ else if(process.env.NODE_ENV === 'production') {
         console.log('here');
         db = knex({
                 client: 'pg',
-                connection: process.env.PG_USER_URI
+                connection: process.env.PG_ADMIN_URI
         });
 
-        console.log(process.env.PG_USER_URI);
-        console.log('db: ', db);
+        // console.log(process.env.PG_USER_URI);
+        // console.log('db: ', db);
 }
 
 const PORT = process.env.PORT;
