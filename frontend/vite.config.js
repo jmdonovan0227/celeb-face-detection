@@ -10,6 +10,7 @@ export default defineConfig(({ mode }) => {
       react(),
       VitePWA({
         registerType: 'prompt',
+        includeAssets: ['*.png'],
         injectRegister: 'auto',
         manifest: {
           name: 'Celebrity Face Detection',
