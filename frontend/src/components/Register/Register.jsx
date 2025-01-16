@@ -132,41 +132,41 @@ class Register extends Component {
 
     render() {
         return (
-            <article className="article register-article">
-                <main>
-                    <div className="main-content">
-                        <fieldset id="sign_up" className='register-fieldset'>
-                            <legend className="centerPageElements register-legend">Register</legend>
-                            <div className="spaceInputFields">
-                                <label htmlFor="name">Name</label>
-                                <input onChange={this.onNameChange} className="input-fields" type="text" name="name"  id="name" maxLength="30" autoComplete='off' />
-                            </div>
-                            <div className="spaceInputFields">
-                                <label htmlFor="email-address">Email</label>
-                                <input onChange={this.onEmailChange} className="input-fields" type="email" name="email-address"  id="email-address" maxLength="50" autoComplete='off' />
-                            </div>
-                            <div className="spaceInputFields">
-                                <label htmlFor="password">Password</label>
-                                <input onChange={this.onPasswordChange} role='password-input' className="input-fields" type={this.state.showPassword ? 'text' : 'password'} name="password"  id="password" maxLength="50" autoComplete='off' />
-                            </div>
-                        </fieldset>
-                        <div className='register-submit-container'>
-                            <div className='password-length'>
-                                <p><strong>Password Length:</strong> {this.state.password.length}</p>
-                            </div>
-                            <div className="register-buttons">
-                                <button onClick={this.onPasswordButtonClick} aria-label='show_hide_button' className="style-buttons">{this.state.showPassword ? 'Hide Password' : 'Show Password'}</button>
-                                <input onClick={this.onSubmitSignIn} className="style-buttons" aria-label='register_submit_button' type="submit" value="Register" />
+                <article className="article register-article">
+                    <main>
+                        <div className="main-content">
+                            <fieldset id="sign_up" className='register-fieldset'>
+                                <legend className="centerPageElements register-legend">Register</legend>
+                                <div className="spaceInputFields">
+                                    <label htmlFor="name">Name</label>
+                                    <input onChange={this.onNameChange} className="input-fields" type="text" name="name"  id="name" maxLength="30" autoComplete='off' />
+                                </div>
+                                <div className="spaceInputFields">
+                                    <label htmlFor="email-address">Email</label>
+                                    <input onChange={this.onEmailChange} className="input-fields" type="email" name="email-address"  id="email-address" maxLength="50" autoComplete='off' />
+                                </div>
+                                <div className="spaceInputFields">
+                                    <label htmlFor="password">Password</label>
+                                    <input onChange={this.onPasswordChange} role='password-input' className="input-fields" type={this.state.showPassword ? 'text' : 'password'} name="password"  id="password" maxLength="50" autoComplete='off' />
+                                </div>
+                            </fieldset>
+                            <div className='register-submit-container'>
+                                <div className='password-length'>
+                                    <p><strong>Password Length:</strong> {this.state.password.length}</p>
+                                </div>
+                                <div className="register-buttons">
+                                    <button onClick={this.onPasswordButtonClick} aria-label='show_hide_button' className="style-buttons">{this.state.showPassword ? 'Hide Password' : 'Show Password'}</button>
+                                    <input onClick={this.onSubmitSignIn} className="style-buttons" aria-label='register_submit_button' type="submit" value="Register" />
+                                </div>
                             </div>
                         </div>
-                    </div>
-                    <div className='error-content'>
-                        <div className='error-text'>
-                            { this.state.errorState ? <div><p aria-label='error-text'>{this.state.errorText}</p></div> : null }
+                        <div className='error-content'>
+                            <div className='error-text'>
+                                { this.state.errorState ? <div><p aria-label='error-text'>{this.state.errorText}</p></div> : null }
+                            </div>
                         </div>
-                    </div>
-                </main>
-            </article>
+                    </main>
+                </article>
         );
     }
 }
