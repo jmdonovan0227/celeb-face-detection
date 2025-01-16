@@ -1,18 +1,27 @@
-import React, { Component, createRef, Suspense } from 'react';
+import React, { Component, createRef, Suspense, lazy } from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import Navigation from './components/Navigation/Navigation';
 import SignInForm from './components/SignIn/SignIn';
-import Register from './components/Register/Register';
-import ForgotPassword from './components/ForgotPassword/ForgotPassword';
-import ResetPassword from './components/ResetPassword/ResetPassword';
-import ErrorPage from './components/ErrorPage/ErrorPage';
-import Home from './components/Home/Home';
-import LoadingSpinner from './components/LoadingSpinner/LoadingSpinner';
+// import Register from './components/Register/Register';
+const Register = lazy(() => import('./components/Register/Register'));
+// import ForgotPassword from './components/ForgotPassword/ForgotPassword';
+const ForgotPassword = lazy(() => import('./components/ForgotPassword/ForgotPassword'));
+// import ResetPassword from './components/ResetPassword/ResetPassword';
+const ResetPassword = lazy(() => import('./components/ResetPassword/ResetPassword'));
+// import ErrorPage from './components/ErrorPage/ErrorPage';
+const ErrorPage = lazy(() => import('./components/ErrorPage/ErrorPage'));
+// import Home from './components/Home/Home';
+const Home = lazy(() => import('./components/Home/Home'));
+import PageLoadingSpinner from './components/PageLoadingSpinner/PageLoadingSpinner';
+// const LoadingSpinner = lazy(() => import('./components/LoadingSpinner/LoadingSpinner.jsx'));
 import ParticlesBg from 'particles-bg';
 import ProfileModal from './components/Modal/ProfileModal';
 import DeleteModal from './components/Modal/DeleteModal';
-import Profile from './components/Profile/Profile';
-import Delete from './components/Profile/Delete';
+import CompLoadingSpinner from './components/CompLoadingSpinner/CompLoadingSpinner';
+// import Profile from './components/Profile/Profile';
+const Profile = lazy(() => import('./components/Profile/Profile'));
+// import Delete from './components/Profile/Delete';
+const Delete = lazy(() => import('./components/Profile/Delete'));
 import { APP_URL } from './config.js';
 import './App.css';
 
@@ -160,17 +169,22 @@ class App extends Component {
     const regions = data.outputs[0].data.regions;
 
     if(regions) {
-      let celebrities = {
-        celebrityNamesArray: []
-      };
+      let celebrities = {};
+      let cNameSet = new Set();
   
       regions.forEach(region => {
         const mostLikelyCelebrityName = region.data.concepts[0].name;
-        celebrities.celebrityNamesArray.push(mostLikelyCelebrityName);
+        // sets shouldn't add duplicate values by default, but this is a good extra step to verify that a value doesn't already exist
+        if(!cNameSet.has(mostLikelyCelebrityName)) {
+          cNameSet.add(mostLikelyCelebrityName);
+        }
       });
+
+      celebrities.celebrityNamesArray = Array.from(cNameSet);
   
       return celebrities;
     }
+
     else {
       return null;
     }
@@ -332,51 +346,77 @@ class App extends Component {
 
     return (
       <div className='app'>
-        { this.state.isCheckingSession ? <LoadingSpinner /> : (
+        { this.state.isCheckingSession ? <PageLoadingSpinner /> : (
               <BrowserRouter>
                 <ParticlesBg type="cobweb" bg={true} />
                 <Routes>
-                  <Route path="/" element={<Suspense fallback={<div>Loading Nav...</div>}><Navigation toggleDeleteModal={this.toggleDeleteModal} isSignedIn={isSignedIn} onRouteChange={this.onRouteChange} toggleModal={this.toggleModal} profile_picture={this.state.user?.profile_picture} /></Suspense>}>
+                  <Route path="/" element={<Navigation toggleDeleteModal={this.toggleDeleteModal} isSignedIn={isSignedIn} onRouteChange={this.onRouteChange} toggleModal={this.toggleModal} profile_picture={this.state.user?.profile_picture} />}>
                     <Route index element={(route === 'signin' || route === 'signout') ? <SignInForm loadUser={this.loadUser} onRouteChange={this.onRouteChange} /> : (
                       route === 'home' ? (
                         <div className='home-container'>
                           { isProfileOpen &&
                               <ProfileModal>
-                                <Profile isProfileOpen={isProfileOpen} toggleModal={this.toggleModal} user={user} loadUser={this.loadUser} profile_picture={this.state.user.profile_picture} setProfilePicture={this.setProfilePicture} />
+                                <Suspense fallback={<CompLoadingSpinner />}>
+                                  <Profile isProfileOpen={isProfileOpen} toggleModal={this.toggleModal} user={user} loadUser={this.loadUser} profile_picture={this.state.user.profile_picture} setProfilePicture={this.setProfilePicture} />
+                                </Suspense>
                               </ProfileModal>
                           }
 
                           {
                             isDeleteModalOpen &&
                               <DeleteModal>
-                                <Delete isDeleteModalOpen={isDeleteModalOpen} toggleDeleteModal={this.toggleDeleteModal} onRouteChange={this.onRouteChange} />
+                                <Suspense fallback={<CompLoadingSpinner />}>
+                                  <Delete isDeleteModalOpen={isDeleteModalOpen} toggleDeleteModal={this.toggleDeleteModal} onRouteChange={this.onRouteChange} />
+                                </Suspense>
                               </DeleteModal>
                           }
 
-                          <Home 
-                            name={user.name} 
-                            entries={user.entries}
-                            errorStatus={this.state.errorStatus} 
-                            celebrities={this.state.allCelebrities} 
-                            onInputChange={this.onInputChange}
-                            onButtonSubmit={this.onButtonSubmit}
-                            boxes={boxes} 
-                            imageUrl={imageUrl}
-                            input={this.state.input}
-                            fileLink={this.state.fileLink}
-                            readyToDetectImages={readyToDetectImages}
-                            onImageFormClose={this.onImageFormClose}
-                            parentRef={this.state.parentRef}
-                          />
+                          <Suspense fallback={ <PageLoadingSpinner pageName="home" /> }>
+                            <Home 
+                              name={user.name} 
+                              entries={user.entries}
+                              errorStatus={this.state.errorStatus} 
+                              celebrities={this.state.allCelebrities} 
+                              onInputChange={this.onInputChange}
+                              onButtonSubmit={this.onButtonSubmit}
+                              boxes={boxes} 
+                              imageUrl={imageUrl}
+                              input={this.state.input}
+                              fileLink={this.state.fileLink}
+                              readyToDetectImages={readyToDetectImages}
+                              onImageFormClose={this.onImageFormClose}
+                              parentRef={this.state.parentRef}
+                            />
+                          </Suspense>
                         </div> 
                         ) : (
-                        route === 'register' ? <Register setIsCheckingSession={this.setIsCheckingSession} loadUser={this.loadUser} onRouteChange={this.onRouteChange} /> : null
-                      )
+                        route === 'register' ? (
+                            <Suspense fallback={<PageLoadingSpinner />}>
+                              <Register setIsCheckingSession={this.setIsCheckingSession} loadUser={this.loadUser} onRouteChange={this.onRouteChange} />
+                            </Suspense>
+                          ) : null
+                        )
                     )}/>
 
-                    <Route path="forgot_password" element={<ForgotPassword isSignedIn={isSignedIn} />}/>
-                    <Route path="reset_password" element={<ResetPassword isSignedIn={isSignedIn} />}/>
-                    <Route path="*" element={<ErrorPage/>} />
+                    <Route path="forgot_password" element={
+                        <Suspense fallback={<PageLoadingSpinner />}>
+                          <ForgotPassword isSignedIn={isSignedIn} 
+                          />
+                        </Suspense>
+                      }
+                    />
+                    <Route path="reset_password" element={
+                        <Suspense fallback={<PageLoadingSpinner />}>
+                          <ResetPassword isSignedIn={isSignedIn} />
+                        </Suspense>
+                      }
+                    />
+                    <Route path="*" element={
+                        <Suspense fallback={<PageLoadingSpinner />}>
+                          <ErrorPage/>
+                        </Suspense>
+                      } 
+                    />
                   </Route>
                 </Routes>
               </BrowserRouter>

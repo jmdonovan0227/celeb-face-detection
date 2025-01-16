@@ -32,7 +32,7 @@ describe('<App />', () => {
         await userEvent.click(r_link_text);
 
         // assert
-        expect(screen.getByRole('group', { name: /Register/i })).toBeInTheDocument();
+        expect(await screen.findByRole('group', { name: /Register/i })).toBeInTheDocument();
     });
 
     test('Valid Flow 1.2: Create Account Part 2 => enter valid registration email and password and be sent to home page', async() => {
@@ -60,8 +60,8 @@ describe('<App />', () => {
         await userEvent.click(register_button);
 
         // Step 3 => grab fields we expect to appear on screen (verify register name is in the document and we have an entry count of 0)
-        const introDiv = screen.getByRole('generic', { name: /intro-entry-count/i });
-        const entriesDiv = screen.getByRole('generic', { name: /entries-entry-count/i });
+        const introDiv = await screen.findByRole('generic', { name: /intro-entry-count/i });
+        const entriesDiv = await screen.findByRole('generic', { name: /entries-entry-count/i });
 
         // assert (verify we landed on home page and our user's info is displayed correctly)
         expect(introDiv).toHaveTextContent('Jim, your current entry count is...');
