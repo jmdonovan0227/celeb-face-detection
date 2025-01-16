@@ -1,6 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, lazy, Suspense } from 'react';
 import { Link, Outlet } from 'react-router-dom';
-import ProfileIcon from '../Profile/ProfileIcon';
+// import ProfileIcon from '../Profile/ProfileIcon';
+const ProfileIcon = lazy(() => import('../Profile/ProfileIcon'));
+import CompLoadingSpinner from '../CompLoadingSpinner/CompLoadingSpinner';
 import './Navigation.css';
 
 const Navigation = ({ onRouteChange, isSignedIn, toggleModal, toggleDeleteModal, profile_picture }) => {
@@ -19,11 +21,15 @@ const Navigation = ({ onRouteChange, isSignedIn, toggleModal, toggleDeleteModal,
         });
     }, []);
 
+
+
     if(isSignedIn) {
         return (
             <div className='navigation-container'>
                 <nav className={isOnline ? 'icon-container' : 'offline-container'}>
-                    <ProfileIcon onRouteChange={onRouteChange} toggleModal={toggleModal} toggleDeleteModal={toggleDeleteModal} profile_picture={profile_picture} />
+                    <Suspense fallback={<CompLoadingSpinner componentName='profile' />}>
+                        <ProfileIcon onRouteChange={onRouteChange} toggleModal={toggleModal} toggleDeleteModal={toggleDeleteModal} profile_picture={profile_picture} />
+                    </Suspense>
                 </nav>
 
                 <div className='child-routes-container'>

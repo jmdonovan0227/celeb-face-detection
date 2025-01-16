@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
+import CompLoadingSpinner from '../CompLoadingSpinner/CompLoadingSpinner';
 import './FaceRecognition.css';
 
 // setting height to auto will automatically adjust the height based on width to keep picture at a fixed size
 // but not make the image look squished
 const FaceRecognition = ({ imageUrl, boxes, parentRef, toggleImage, error, text }) => {
     const [isImageLoading, setIsImageLoading] = useState(true);
+
 
     useEffect(() => {
         setIsImageLoading(true);
@@ -20,8 +22,9 @@ const FaceRecognition = ({ imageUrl, boxes, parentRef, toggleImage, error, text 
 
             <div className='celebs-names-container'>
                 {
-                    error ? <p className='names-style' role='error-span'>Sorry, I wasn't able to detect any faces...</p>
-                    : <p className='names-style' role='valid-span'>{text}</p>
+                    !error && !text ? <CompLoadingSpinner /> :
+                        error ? <p className='names-style' role='error-span'>Sorry, I wasn't able to detect any faces...</p>
+                        : <p className='names-style' role='valid-span'>{text}</p>
                 }
             </div>
 
