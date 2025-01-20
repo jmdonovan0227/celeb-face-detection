@@ -371,7 +371,7 @@ class App extends Component {
                               </DeleteModal>
                           }
 
-                          <Suspense fallback={ <PageLoadingSpinner pageName="home" /> }>
+                          <Suspense fallback={ <PageLoadingSpinner /> }>
                             <Home 
                               name={user.name} 
                               entries={user.entries}
