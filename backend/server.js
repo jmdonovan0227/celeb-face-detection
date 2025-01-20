@@ -39,8 +39,6 @@ const corsOptions = {
                 }
 
                 else {
-                        console.log('origin: ', origin);
-                        console.log(process.env.ALLOWED_ORIGIN);
                         callback(new Error('Not allowed by CORS'));
                 }
         }
