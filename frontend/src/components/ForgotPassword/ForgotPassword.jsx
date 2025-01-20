@@ -61,7 +61,7 @@ const ForgotPassword = ({ isSignedIn }) => {
                 <div className='error-content'>
                     <div className='response-container' aria-label='response-container'>
                         { successfulRequest ? <p className='fp-success-text' aria-label='fp-success-text'>Password Reset Request Sent!</p> : 
-                            errorState ? <p className='fp-error-text' aria-label='error-text'>Invalid Email or Password</p> : null
+                            errorState ? <p className='fp-error-text' aria-label='fp-error-text'>Invalid Email or Password</p> : null
                         }
                     </div>
                 </div>
