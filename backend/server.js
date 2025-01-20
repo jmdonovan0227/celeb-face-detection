@@ -39,6 +39,8 @@ const corsOptions = {
                 }
 
                 else {
+                        console.log('origin: ', origin);
+                        console.log(process.env.ALLOWED_ORIGIN);
                         callback(new Error('Not allowed by CORS'));
                 }
         }
@@ -89,7 +91,7 @@ app.put('/api/image', requireAuth, (req, res) => { handleImageGet(req, res, db) 
 
 app.post('/api/faceurl', requireAuth, upload.single('image'), (req, res) => { handleFaceApiCall(req, res, db) });
 
-app.delete('/api/delete', requireAuth, (req, res) => { handleProfileDeletion(req, res, db, bcrypt) });
+app.delete('/api/delete', requireAuth, (req, res) => { handleProfileDeletion(req, res, db, bcrypt, nodemailer, google) });
 
 app.post('/api/forgot_password', (req, res) => { forgotPassword(req, res, db, decrypt, nodemailer, google)});
 

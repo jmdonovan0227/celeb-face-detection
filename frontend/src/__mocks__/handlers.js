@@ -84,7 +84,7 @@ export const handlers = [
         return HttpResponse.json({success: 'true'});
     }),
 
-    http.put(`${APP_URL}/api/profile/:id`, async({ request }) => {
+    http.put(`${APP_URL}/api/profile`, async({ request }) => {
         const body = await request.json();
         const { name, age } = body;
 
@@ -105,8 +105,8 @@ export const handlers = [
         const userInfo = await request.json();
         const { email, password } = userInfo;
 
-        if(email && password && exists([{ id: 2, email: 'test@gmail.com', password: 'PasswordLong-101!' }], email )) {
-            return HttpResponse.json({ id: 2 });
+        if(email && password && exists([{ id: 2, email: 'test@gmail.com', password: 'PasswordLong-101!' }], email)) {
+            return HttpResponse.json({ success: true });
         }
 
         else {

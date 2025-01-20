@@ -279,17 +279,74 @@ describe('<App />', () => {
         await userEvent.click(screen.getByRole('menuitem', { name: /Delete Account/i }));
 
         await waitFor(() => {
-            expect(screen.getByRole('button', { name: /Close/i })).toBeInTheDocument();
-            expect(screen.getByRole('paragraph', { name: /deletion-header/i })).toBeInTheDocument();
-            expect(screen.getByRole('textbox', { name: /Email Address/i })).toBeInTheDocument();
-            expect(screen.getByRole('password-input')).toBeInTheDocument();
+            expect(screen.getByRole('generic', { name: /Close/i })).toBeInTheDocument();
+            expect(screen.getByRole('paragraph', { name: /thank-you-header/i })).toBeInTheDocument();
+            expect(screen.getByRole('textbox', { name: /Email/i })).toBeInTheDocument();
+            expect(screen.getByRole('del-password-input')).toBeInTheDocument();
             expect(screen.getByRole('button', { name: /show-hide-pw-button/i })).toBeInTheDocument();
             expect(screen.getByRole('button', { name: /cancel-account-deletion/i })).toBeInTheDocument();
             expect(screen.getByRole('button', { name: /confirm-account-deletion/i })).toBeInTheDocument();
         });
     });
 
-    test('Valid Flow 5 => Delete Account => verify we can delete an existing user account while logged in', async() => {
+    test('Valid Flow 5: => Updating a user age and name on profile page', async() => {
+        // arrange
+        render (
+            <App />
+        );
+
+        const email_input = screen.getByRole('textbox', { name: /Email/i });
+        const password_input = screen.getByRole('password-input');
+        const show_hide_button = screen.getByRole('button', { name: /password_visibility/i });
+        const sign_in_button = screen.getByRole('button', { name: /signin_button/i });
+
+        // Step 1 => enter valid login info and attempt to login
+        await userEvent.type(email_input, "test@gmail.com");
+        await userEvent.type(password_input, "PasswordLong-101!");
+        await userEvent.click(show_hide_button);
+        await userEvent.click(sign_in_button);
+
+        // Step 2 => verify we landed on home page
+        const introDiv = screen.getByRole('generic', { name: /intro-entry-count/i });
+        const entriesDiv = screen.getByRole('generic', { name: /entries-entry-count/i });
+
+        // assert
+        expect(introDiv).toHaveTextContent('Jim, your current entry count is...');
+        expect(entriesDiv).toHaveTextContent('2');
+
+        // Step 3 => get connection to profile icon and simulate click event
+        const dropdownToggle = screen.getByRole('dropdown-toggle');
+        await userEvent.click(dropdownToggle);
+        await userEvent.click(screen.getByRole('menuitem', { name: /View Profile/i }));
+
+        await waitFor(() => {
+            expect(screen.getByRole('img', { name: /your profile icon secondary/i })).toBeInTheDocument();
+            expect(screen.getByRole('generic', { name: /close-button/i })).toBeInTheDocument();
+            expect(screen.getByRole('heading', { name: /name/i })).toBeInTheDocument();
+            expect(screen.getByRole('paragraph', { name: /joined-date/i })).toBeInTheDocument();
+            expect(screen.getByRole('upload-profile-picture')).toBeInTheDocument();
+            expect(screen.getByRole('textbox', { name: /Name/i })).toBeInTheDocument();
+            expect(screen.getByRole('textbox', { name: /Name/i })).toBeInTheDocument();
+            expect(screen.getByRole('textbox', { name: /Name/i })).toHaveAttribute('placeholder', 'Jim');
+            expect(screen.getByRole('button', { name: /Save/i })).toBeInTheDocument();
+            expect(screen.getByRole('button', { name: /Cancel/i })).toBeInTheDocument();
+        });
+
+        const name_box = screen.getByRole('textbox', { name: /Name/i });
+        const age_box = screen.getByRole('spinbutton');
+        const save_button = screen.getByRole('button', { name: /Save/i });
+
+        // type a valid age and name into inputs and submit
+        await userEvent.type(name_box, 'Jimbo');
+        await userEvent.type(age_box, '50');
+        await userEvent.click(save_button);
+        
+        await waitFor(() => {
+            expect(screen.getByRole('generic', { name: /profile-response-container/i })).toHaveTextContent('Your profile was successfully updated!');
+        });
+    });
+
+    test('Valid Flow 6 => Delete Account => verify we can delete an existing user account while logged in', async() => {
         // arrange
         render (
             <App />
@@ -320,24 +377,24 @@ describe('<App />', () => {
         await userEvent.click(screen.getByRole('menuitem', { name: /Delete Account/i }));
 
         await waitFor(() => {
-            expect(screen.getByRole('button', { name: /Close/i })).toBeInTheDocument();
-            expect(screen.getByRole('paragraph', { name: /deletion-header/i })).toBeInTheDocument();
-            expect(screen.getByRole('textbox', { name: /Email Address/i })).toBeInTheDocument();
-            expect(screen.getByRole('password-input')).toBeInTheDocument();
+            expect(screen.getByRole('generic', { name: /Close/i })).toBeInTheDocument();
+            expect(screen.getByRole('paragraph', { name: /thank-you-header/i })).toBeInTheDocument();
+            expect(screen.getByRole('textbox', { name: /delete-email/i })).toBeInTheDocument();
+            expect(screen.getByRole('del-password-input')).toBeInTheDocument();
             expect(screen.getByRole('button', { name: /show-hide-pw-button/i })).toBeInTheDocument();
             expect(screen.getByRole('button', { name: /cancel-account-deletion/i })).toBeInTheDocument();
             expect(screen.getByRole('button', { name: /confirm-account-deletion/i })).toBeInTheDocument();
         });
 
         // Step 4 => enter valid email and password and click delete/verify results
-        const email_input_box = screen.getByRole('textbox', { name: /Email Address/i });
-        const password_input_box = screen.getByRole('password-input');
+        const del_email_input = screen.getByRole('textbox', { name: /delete-email/i });
+        const password_input_box = screen.getByRole('del-password-input');
         const show_hide_pw_button = screen.getByRole('button', { name: /show-hide-pw-button/i });
         const confirm_button = screen.getByRole('button', { name: /confirm-account-deletion/i });
 
         // act
         await userEvent.click(show_hide_pw_button);
-        await userEvent.type(email_input_box, 'test@gmail.com');
+        await userEvent.type(del_email_input, 'test@gmail.com');
         await userEvent.type(password_input_box, 'PasswordLong-101!');
         await userEvent.click(confirm_button);
 
@@ -346,7 +403,7 @@ describe('<App />', () => {
         });
     });
 
-    test('Valid Flow 6 => Signing Out => verify we can sign out a logged in user and we are returned to sign in page', async() => {
+    test('Valid Flow 7 => Signing Out => verify we can sign out a logged in user and we are returned to sign in page', async() => {
         // arrange
         render (
             <App />
@@ -532,18 +589,18 @@ describe('<App />', () => {
         await userEvent.click(screen.getByRole('menuitem', { name: /Delete Account/i }));
 
         await waitFor(() => {
-            expect(screen.getByRole('button', { name: /Close/i })).toBeInTheDocument();
-            expect(screen.getByRole('paragraph', { name: /deletion-header/i })).toBeInTheDocument();
-            expect(screen.getByRole('textbox', { name: /Email Address/i })).toBeInTheDocument();
-            expect(screen.getByRole('password-input')).toBeInTheDocument();
+            expect(screen.getByRole('generic', { name: /Close/i })).toBeInTheDocument();
+            expect(screen.getByRole('paragraph', { name: /thank-you-header/i })).toBeInTheDocument();
+            expect(screen.getByRole('textbox', { name: /delete-email/i })).toBeInTheDocument();
+            expect(screen.getByRole('del-password-input')).toBeInTheDocument();
             expect(screen.getByRole('button', { name: /show-hide-pw-button/i })).toBeInTheDocument();
             expect(screen.getByRole('button', { name: /cancel-account-deletion/i })).toBeInTheDocument();
             expect(screen.getByRole('button', { name: /confirm-account-deletion/i })).toBeInTheDocument();
         });
 
         // Step 4 => enter valid email and password and click delete/verify results
-        const email_input_box = screen.getByRole('textbox', { name: /Email Address/i });
-        const password_input_box = screen.getByRole('password-input');
+        const email_input_box = screen.getByRole('textbox', { name: /delete-email/i });
+        const password_input_box = screen.getByRole('del-password-input');
         const show_hide_pw_button = screen.getByRole('button', { name: /show-hide-pw-button/i });
         const confirm_button = screen.getByRole('button', { name: /confirm-account-deletion/i });
 
@@ -552,6 +609,6 @@ describe('<App />', () => {
         await userEvent.type(email_input_box, 'wrongtest@gmail.com');
         await userEvent.type(password_input_box, 'WrongPasswordLong-101!');
         await userEvent.click(confirm_button);
-        expect(screen.getByRole('paragraph', { name: /error-message/i })).toHaveTextContent('Invalid Email or Password. Please Try Again.');
+        expect(screen.getByRole('paragraph', { name: /error-message/i })).toHaveTextContent('Could not process account deletion. Invalid email or password.');
     });
 });

@@ -2,3 +2,8 @@
     position: relative;
     z-index: 999;
 }
+
+#delete-modal-root {
+    position: relative;
+    z-index: 999;
+}

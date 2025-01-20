@@ -21,6 +21,7 @@
 }
 
 .search-input {
+    border: 1px solid black;
     padding: 1rem;
     width: 75%;
 }
