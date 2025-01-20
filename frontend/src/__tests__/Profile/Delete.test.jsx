@@ -26,7 +26,7 @@ const server = setupServer(
         const { email, password } = userInfo;
 
         if(email && password && exists([{ id: 1, email: 'test@gmail.com', password: 'password' }], { email, password })) {
-            return HttpResponse.json({ id: 1 });
+            return HttpResponse.json({ success: true });
         }
 
         else {
@@ -59,10 +59,10 @@ describe('<DeleteModal /> and <Delete />', () => {
             </MemoryRouter>
         );
 
-        const close_button = screen.getByRole('button', { name: /Close/i });
-        const deletion_header = screen.getByRole('paragraph', { name: /deletion-header/i });
-        const email_input_box = screen.getByRole('textbox', { name: /Email Address/i });
-        const password_input_box = screen.getByRole('password-input');
+        const close_button = screen.getByRole('generic', { name: /Close/i });
+        const deletion_header = screen.getByRole('paragraph', { name: /thank-you-header/i });
+        const email_input_box = screen.getByRole('textbox', { name: /delete-email/i });
+        const password_input_box = screen.getByRole('del-password-input');
         const show_hide_pw_button = screen.getByRole('button', { name: /show-hide-pw-button/i });
         const cancel_button = screen.getByRole('button', { name: /cancel-account-deletion/i });
         const confirm_button = screen.getByRole('button', { name: /confirm-account-deletion/i });
@@ -92,8 +92,8 @@ describe('<DeleteModal /> and <Delete />', () => {
         );
 
 
-        const email_input_box = screen.getByRole('textbox', { name: /Email Address/i });
-        const password_input_box = screen.getByRole('password-input');
+        const email_input_box = screen.getByRole('textbox', { name: /delete-email/i });
+        const password_input_box = screen.getByRole('del-password-input');
         const show_hide_pw_button = screen.getByRole('button', { name: /show-hide-pw-button/i });
         const confirm_button = screen.getByRole('button', { name: /confirm-account-deletion/i });
 
@@ -127,8 +127,8 @@ describe('<DeleteModal /> and <Delete />', () => {
         );
 
 
-        const email_input_box = screen.getByRole('textbox', { name: /Email Address/i });
-        const password_input_box = screen.getByRole('password-input');
+        const email_input_box = screen.getByRole('textbox', { name: /delete-email/i });
+        const password_input_box = screen.getByRole('del-password-input');
         const show_hide_pw_button = screen.getByRole('button', { name: /show-hide-pw-button/i });
         const confirm_button = screen.getByRole('button', { name: /confirm-account-deletion/i });
 
@@ -144,7 +144,7 @@ describe('<DeleteModal /> and <Delete />', () => {
         expect(email_input_box).toHaveValue('test2@gmail.com');
         expect(mockToggleDeleteModal).toHaveBeenCalledTimes(1);
         expect(mockOnRouteChange).toHaveBeenCalledTimes(1);
-        expect(await screen.findByRole('paragraph', { name: /error-message/i })).toHaveTextContent('Invalid Email or Password. Please Try Again.')
+        expect(await screen.findByRole('paragraph', { name: /error-message/i })).toHaveTextContent('Could not process account deletion. Invalid email or password.')
     });
 
     test('closing modal with x button or cancel button', async() => {
@@ -161,7 +161,7 @@ describe('<DeleteModal /> and <Delete />', () => {
             </MemoryRouter>
         );
 
-        const close_button = screen.getByRole('button', { name: /Close/i });
+        const close_button = screen.getByRole('generic', { name: /Close/i });
         const cancel_button = screen.getByRole('button', { name: /cancel-account-deletion/i });
 
         // act

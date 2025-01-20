@@ -1,7 +1,9 @@
 import React from 'react';
 import './Profile.css';
 import './ProfileIcon.css';
+import './ProfileStyles.css';
 import { APP_URL } from '../../config.js';
+import CompLoadingSpinner from '../CompLoadingSpinner/CompLoadingSpinner';
 
 class Profile extends React.Component {
     constructor(props) {
@@ -11,6 +13,9 @@ class Profile extends React.Component {
             age: this.props.user.age,
             file: null,
             fileUrl: this.props.user.profile_picture,
+            updatePending: false,
+            updateError: false,
+            updateText: ''
         }
     }
 
@@ -44,17 +49,18 @@ class Profile extends React.Component {
     }
 
     onProfileUpdate = async(data) => {
+        this.setState((prevState) => ({ ...prevState, updatePending: true }));
         const authorization = window.sessionStorage.getItem('token');
+        const { name, age } = data;
 
-        if(this.state.file && this.state.file.type.startsWith('image/') && data) {
-            const { name, age } = data;
+        if(this.state.file && this.state.file.type.startsWith('image/')) {
             const numbersRegex = /[0-9]/;
             const specialCharsRegex = /[!@#$%^&*(),.?":{}|<>]/;
             const whiteSpaceRegex = /\s/;
             const charactersRegex = /[A-Za-z]/;
             const whiteSpaceCount = name.split(' ').length - 1;
 
-            if(!numbersRegex.test(name) && !specialCharsRegex.test(name) && !whiteSpaceRegex.test(age) && !charactersRegex.test(age) && age >= 0 && age <= 99 && whiteSpaceCount <= 1) {
+            if(!numbersRegex.test(name) && !specialCharsRegex.test(name) && !whiteSpaceRegex.test(age) && !charactersRegex.test(age) && age >= 0 && age <= 99 && whiteSpaceCount <= 1 && name.length > 1 && name.length <= 30) {
                 // if user has a profile image in the s3 bucket, delete it.
                 await fetch(`${APP_URL}/api/upload/deletepic`, {
                     method: 'delete',
@@ -87,15 +93,40 @@ class Profile extends React.Component {
                         if(response.ok) {
                             const signedImageData = await signedUrlResponse.json();
                             this.setState({fileUrl : signedImageData.imageUrl});
-                            this.props.loadUser(Object.assign(this.props.user, { profile_picture : signedImageData.imageUrl }, data ));
+                            this.props.loadUser(Object.assign(this.props.user, { profile_picture : signedImageData.imageUrl }, { name, age } ));
+                            this.setState({ updateError: false });
+                            this.setState({ updateText: "Your profile was successfully updated!"});
+                            this.setState({ file: null });
+                        }
+
+                        else {
+                            this.setState({ updateError: true });
+                            this.setState({ updateText: "Sorry, I couldn't update your profile."});
                         }
                     }
+
+                    else {
+                        // couldn't get signedurl
+                        this.setState({ updateError: true });
+                        this.setState({ updateText: "Sorry, I couldn't update your profile."});
+                    }
+                }
+
+                else {
+                    // something went wrong when uploading profile picture
+                    this.setState({ updateError: true });
+                    this.setState({ updateText: "Sorry, I couldn't update your profile."});
                 }
             }
-    
-            this.setState({ file: null });
+
+            else {
+                // name or age is invalid
+                this.setState({ updateError: true });
+                this.setState({ updateText: "Sorry, I couldn't update your profile."});
+            }
+
         } else {
-            if(data) {
+            if(name && age) {
                 const { name, age } = data;
                 const numbersRegex = /[0-9]/;
                 const specialCharsRegex = /[!@#$%^&*(),.?":{}|<>]/;
@@ -104,7 +135,7 @@ class Profile extends React.Component {
                 const whiteSpaceCount = name.split(' ').length - 1;
 
                 
-                if(!numbersRegex.test(name) && !specialCharsRegex.test(name) && !whiteSpaceRegex.test(age) && !charactersRegex.test(age) && age >= 0 && age <= 99 && whiteSpaceCount <= 1) {
+                if(!numbersRegex.test(name) && !specialCharsRegex.test(name) && !whiteSpaceRegex.test(age) && !charactersRegex.test(age) && age >= 0 && age <= 99 && whiteSpaceCount <= 1 && name.length > 1 && name.length <= 30) {
                     const response = await fetch(`${APP_URL}/api/profile`, {
                         method: 'put',
                         headers: {'Content-Type': 'application/json', 'Authorization': authorization },
@@ -112,18 +143,32 @@ class Profile extends React.Component {
                     });
     
                     if(response.ok) {
-                        this.props.loadUser(Object.assign(this.props.user, data));
+                        this.props.loadUser(Object.assign(this.props.user, { name, age }));
+                        this.setState({ updateError: false });
+                        this.setState({ updateText: "Your profile was successfully updated!"});
                     }
                 }
+
+                else {
+                    this.setState({ updateError: true });
+                    this.setState({ updateText: "Sorry, I couldn't update your profile."});
+                }
+            }
+
+            else {
+                this.setState({ updateError: true });
+                this.setState({ updateText: "Sorry, I couldn't update your profile."});
             }
         }
+
+        this.setState((prevState) => ({ ...prevState, updatePending: false }));
     }
 
     render() {
         const { toggleModal, user } = this.props;
-        const { name, age } = this.state;
+        const { name, age, updatePending, updateText, updateError } = this.state;
         return (
-            <div className='profile-modal-background'>
+            <div className='modal-background'>
                 {/* // Align Vertically */}
                 <div className='profile-modal'>
                     {/* // Profile Modal Header Style */}
@@ -136,16 +181,25 @@ class Profile extends React.Component {
 
 
                     {/* // Profile Modal Inputs */}
-                    <div className='profile-modal-inputs'>
+                    <div className='profile-modal-inputs-container'>
                         <div className='inner-container'>
                             <div className='inner-container-profile-pic'>
                                 <label className='profile-pic-label' htmlFor='upload_picture'>Upload Picture</label>
                                 <input role='upload-profile-picture' type='file' name='upload_picture' id='upload_picture' accept='image/*' onChange={this.onProfileInputChange} autoComplete='off'/>
                             </div>
-                            <label className="profile-modal-inputs-align labels" htmlFor="user-name">Name</label>
-                            <input className="profile-modal-inputs-align fields" type="text" maxLength="30" name="user-name" id="user-name" placeholder={user.name} onChange={this.onFormChange} autoComplete='off' />
-                            <label className="profile-modal-inputs-align labels" htmlFor="user-age">Age</label>
-                            <input className="profile-modal-inputs-align fields" type="number" min="1" max="99" name="user-age" id="user-age" placeholder={user.age} onChange={this.onFormChange} autoComplete='off' />
+
+                            <div className='profile-modal-inputs'>
+                                <label className="profile-modal-inputs-align labels" htmlFor="user-name">Name</label>
+                                <input className="profile-modal-inputs-align fields" type="text" maxLength="30" name="user-name" id="user-name" placeholder={user.name} onChange={this.onFormChange} autoComplete='off' />
+                                <label className="profile-modal-inputs-align labels" htmlFor="user-age">Age</label>
+                                <input className="profile-modal-inputs-align fields" type="number" min="1" max="99" name="user-age" id="user-age" placeholder={user.age} onChange={this.onFormChange} autoComplete='off' />
+                            </div>
+
+                            <div className='profile-response-container' aria-label='profile-response-container'>
+                                {
+                                    updatePending ? <CompLoadingSpinner /> : <span className={updateError ? 'profile-res-text-invalid' : 'profile-res-text-valid'}>{updateText}</span>
+                                }
+                            </div>
                         </div>
                     </div>
 

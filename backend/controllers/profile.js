@@ -20,6 +20,45 @@ const s3Client = new S3Client({
 
 const generateFileName = (bytes = 32) => crypto.randomBytes(bytes).toString('hex');
 
+const createTransporter = async(nodemailer, google) => {
+    const OAuth2 = google.auth.OAuth2;
+
+    const oauth2Client = new OAuth2(
+        process.env.G_CLIENT_ID,
+        process.env.G_CLIENT_SECRET,
+        // redirect uri
+        process.env.G_URL
+    );
+
+    oauth2Client.setCredentials({
+        refresh_token: process.env.REFRESH_TOKEN
+    });
+
+    const accessToken = await new Promise((resolve, reject) => {
+        oauth2Client.getAccessToken((err, token) => {
+            if(err) {
+                reject();
+            }
+
+            resolve(token);
+        });
+    });
+
+    const transporter = nodemailer.createTransport({
+        service: process.env.EMAIL_PROVIDER,
+        auth: {
+            type: process.env.TYPE,
+            user: process.env.EMAIL,
+            accessToken,
+            clientId: process.env.G_CLIENT_ID,
+            clientSecret: process.env.G_CLIENT_SECRET,
+            refreshToken: process.env.REFRESH_TOKEN
+        }
+    });
+
+    return transporter;
+};
+
 export const handleProfilePicUpdate = async(req, res, db) => {
     const { authorization } = req.headers;
 
@@ -209,35 +248,20 @@ export const handleProfileGetById = async(req, res, db) => {
     .catch(err => res.status(400).json('Error getting user'));
 };
 
-export const handleProfileDeletion = async(req, res, db, bcrypt) => {
+export const handleProfileDeletion = async(req, res, db, bcrypt, nodemailer, google) => {
     const { authorization } = req.headers;
     const { email, password } = req.body;
 
     if(!authorization) {
-        return res.status(401).json('unauthorized');
+        return res.status(401).json({ error: true });
     }
 
     const id = await redisClient.get(authorization);
-    const response = await db.select('image_key').from('users').where('id', '=', id);
-    const imageKey = response[0].image_key;
-
-    // if user has as a profile image tied to their account, delete it from s3 bucket.
-    if(id && imageKey) {
-        // remove image key from db user
-        await db('users').where('id', '=', id).update('image_key', null);
-
-        const deleteParams = {
-            Bucket: bucketName,
-            Key: imageKey
-        };
-
-        await s3Client.send(new DeleteObjectCommand(deleteParams));
-    }
 
     if(id) {
         // process account deletion
-        db.transaction(trx => {
-            trx
+        db.transaction(trx =>  {
+            return trx
             .select('*')
             .from('login')
             .where('email', '=', email)
@@ -255,18 +279,36 @@ export const handleProfileDeletion = async(req, res, db, bcrypt) => {
                         .where('email', '=', userEmail[0].email)
                         .del()
                         .returning('*')
-                        .then(deletedUser => {
-                            res.json('success');
+                        .then(async(data) => {
+                            if(process.env.NODE_ENV !== 'development' && process.env.NODE_ENV !== 'testing') {
+                                try {
+                                    const name = response[0].name;
+                                    const emailTransporter = await createTransporter(nodemailer, google);
+                        
+                                    const mailOptions = {
+                                        from: process.env.EMAIL,
+                                        to: email,
+                                        subject: 'CFD Account Deletion Confirmation',
+                                        text: `Thank you for trying Celebrity Face Detection, ${name}! This message confirms your account has been successfully deleted.`
+                                    };
+                            
+                                    await emailTransporter.sendMail(mailOptions);
+                                } catch(error) {
+                                    return res.json('Account deletion confirmation email could not be sent.');
+                                }
+                            }
+                                                          
+                            res.json({ success: true });
                         })
-                        .catch(err => res.status(400).json('Could not delete user'))
-                    }).catch(err => res.status(400).json('Could not delete user'))
+                        .catch(err => res.status(400).json({ error: true }))
+                    }).catch(err => res.status(400).json({ error: true }))
                 }
                 else {
-                    res.status(400).json('Could not delete user');
+                    res.status(400).json({ error: true });
                 }
             })
             .then(trx.commit)
             .catch(trx.rollback);
-        }).catch(err => res.status(400).json('Could not delete user'));
+        }).catch(err => res.status(400).json({ error: true }));
     }
 };
