@@ -297,9 +297,7 @@ export const handleProfileDeletion = async(req, res, db, bcrypt, nodemailer, goo
                                     return res.json('Account deletion confirmation email could not be sent.');
                                 }
                             }
-
-                            console.log('here!');
-                              
+                                                          
                             res.json({ success: true });
                         })
                         .catch(err => res.status(400).json({ error: true }))
