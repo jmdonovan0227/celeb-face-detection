@@ -144,8 +144,8 @@ const ResetPassword = ({ isSignedIn }) => {
                 <div className='error-content'>
                     <div className='response-container'>
                         { passwordReset ?
-                            <p className='success-text' aria-label='pw-reset-success-text' style={{color: 'green'}}>Password successfully reset!</p>
-                            : ( errorState ? <p className='error-text' aria-label='pw-reset-failure-text'>{error_text}</p> : null )
+                            <p className='rp-success-text' aria-label='pw-reset-success-text' style={{color: 'green'}}>Password successfully reset!</p>
+                            : ( errorState ? <p className='rp-error-text' aria-label='pw-reset-failure-text'>{error_text}</p> : null )
                         }   
                     </div>
                 </div>

@@ -282,7 +282,7 @@ export const handleProfileDeletion = async(req, res, db, bcrypt, nodemailer, goo
                         .then(async(data) => {
                             if(process.env.NODE_ENV !== 'development' && process.env.NODE_ENV !== 'testing') {
                                 try {
-                                    const name = response[0].name;
+                                    const name = data[0].name;
                                     const emailTransporter = await createTransporter(nodemailer, google);
                         
                                     const mailOptions = {
