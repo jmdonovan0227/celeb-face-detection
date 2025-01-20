@@ -1,3 +1,11 @@
+.page-container {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
 .page-loader {
     border: 1.5rem solid lightgray;
     border-top: 1.5rem solid rgba(0, 0, 255, 0.5);
@@ -5,6 +13,20 @@
     width: 12rem;
     height: 12rem;
     animation: spin 1s linear infinite;
+}
+
+/** Temporary placeholder class which is a replica of the container used on home page (test-x in Home.css). Added this to remember what this is and also make it less confusing what the style is based on/where it came from. */
+.special-container {
+    height: 95%;
+    width: 75%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background-color: white;
+    border: 1px solid rgba(0, 0, 0, 0.25);
+    box-shadow: 6px 6px 6px rgba(0, 0, 0, 0.25);
+    border-radius: 5%;
 }
 
 @keyframes spin {
