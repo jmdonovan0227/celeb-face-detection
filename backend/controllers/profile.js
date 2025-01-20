@@ -289,7 +289,7 @@ export const handleProfileDeletion = async(req, res, db, bcrypt, nodemailer, goo
                                         from: process.env.EMAIL,
                                         to: email,
                                         subject: 'CFD Account Deletion Confirmation',
-                                        text: `Thank you for trying Celebrity Face Detection, ${name}! This message confirms your account has been successfully deleted.`
+                                        text: `Thank you for trying Celebrity Face Detection, ${name}! This message confirms that your account has been successfully deleted.`
                                     };
                             
                                     await emailTransporter.sendMail(mailOptions);
