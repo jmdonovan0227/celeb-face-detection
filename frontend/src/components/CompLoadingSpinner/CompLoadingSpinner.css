@@ -15,16 +15,41 @@
 }
 
 .comp-loader {
-    border: 1.5rem solid lightgray;
-    border-top: 1.5rem solid rgba(0, 0, 255, 0.5);
+    border: 1rem solid lightgray;
+    border-top: 1rem solid rgba(0, 0, 255, 0.5);
     border-radius: 50%;
-    height: 5rem;
-    width: 5rem;
+    width: 4rem;
+    height: 4rem;
     animation: spin 1s linear infinite;
 }
 
 @keyframes spin {
     to {
         transform: rotate(360deg);
+    }
+}
+
+@media only screen and (min-height: 814px) and (max-height: 870px) {
+    .comp-loader {
+        width: 3.5rem;
+        height: 3.5rem;
+    }
+}
+
+@media only screen and (min-height: 665px) and (max-height: 813px) {
+    .comp-loader {
+        width: 2rem;
+        height: 2rem;
+        border: 0.25rem solid lightgray;
+        border-top: 0.25rem solid rgba(0, 0, 255, 0.5);
+    }
+}
+
+@media only screen and (min-height: 600px) and (max-height: 664px) {
+    .comp-loader {
+        width: 1.35rem;
+        height: 1.35rem;
+        border: 0.25rem solid lightgray;
+        border-top: 0.25rem solid rgba(0, 0, 255, 0.5);
     }
 }

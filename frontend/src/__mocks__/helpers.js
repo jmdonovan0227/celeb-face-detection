@@ -1,5 +1,5 @@
 export const exists = (users, email) => {
-    const found = false;
+    let found = false;
     users.forEach(user => {
         if(user.email === email) {
             found = true;

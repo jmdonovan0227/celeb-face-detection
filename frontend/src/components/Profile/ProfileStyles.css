@@ -1,0 +1,74 @@
+.modal-background {
+    background-color: rgba(255, 255, 255, 0.9);
+    position: fixed;
+    height: 100%;
+    width: 100%;
+    top: 0;
+    left: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.profile-modal {
+    width: 40%;
+    height: 80%;
+    display: flex;
+    flex-direction: column;
+    position: fixed;
+    border: 1px solid rgba(0, 0, 0, 0.25);
+    box-shadow: 6px 6px 6px rgba(0, 0, 0, 0.25);
+    background-color: rgba(255, 255, 255, 1);
+}
+
+.modal-close {
+    height: 5%;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    font-size: 3rem;
+    font-style: bold;
+    padding: 0.5rem 0.35rem 1rem 0;
+    cursor: pointer;
+}
+
+.modal-close:hover {
+    color: gray;
+    cursor: pointer;
+}
+
+@media only screen and (min-width: 1800px) and (max-width: 2247px) {
+    .profile-modal {
+        width: 60%;
+    }
+}
+
+@media only screen and (min-width: 1025px) and (max-width: 1799px) {
+    .profile-modal {
+        width: 75%;
+    }
+}
+
+@media only screen and (min-width: 926px) and (max-width: 1024px) {
+    .profile-modal {
+        width: 75%;
+    }
+}
+
+@media only screen and (min-width: 667px) and (max-width: 925px) {
+    .profile-modal {
+        width: 85%;
+    }
+}
+
+@media only screen and (min-width: 489px) and (max-width: 666px) {
+    .profile-modal {
+        width: 100%;
+    }
+}
+
+@media only screen and (min-width: 344px) and (max-width: 488px) {
+    .profile-modal {
+        width: 100%;
+    }
+}
